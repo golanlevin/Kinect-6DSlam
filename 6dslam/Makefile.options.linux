@@ -1,0 +1,25 @@
+MAKEFLAGS += -s
+
+#
+# -------
+# OpenMP
+# -------
+#MAKEFLAGS += -j
+CFLAGS = -DMAX_OPENMP_NUM_THREADS=4 -DOPENMP_NUM_THREADS=4
+#CFLAGS += -fopenmp
+
+# -------
+# GNU C++
+# -------
+#
+GPP    = g++
+SHAREDFLAGS = -shared #-fPIC
+LIBRARIES = -lglut -lGL -lGLU -L/usr/X11R6/lib -lXmu -lXt -lXi -lm -lXext -lX11 -lpthread -ldl -lstdc++ 
+
+CFLAGS += -O3 -Wall -finline-functions
+#CFLAGS += -static -L/usr/local/src/Mesa-7.0.1/lib/
+#CFLAGS += -DDEBUG
+#CFLAGS += -Winline
+#CFLAGS += -Wno-deprecated -Wno-write-strings
+#CFLAGS += -mfpmath=sse -msse2 -march=i686
+CFLAGS += -pipe -march=native
