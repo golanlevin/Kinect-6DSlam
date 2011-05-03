@@ -1,0 +1,85 @@
+README
+
+DIRECTORIES:
+-- Kinect-data-recorder.zip: this is an OpenFrameworks 0.62 project, 
+   which produces data files (.3d and .pose) for the slam6D algorithm
+-- 6Dslam: this is the slam6D project, 
+   which is a command-line app, that needs to be compiled.
+
+You will need to download Boost for the 6dslam:
+-- boost_1_46_1.tar.bz2 
+http://sourceforge.net/projects/boost/files/boost/1.46.1/
+
+USER OVERVIEW (BRIEF):
+-- Use the Kinect-data-recorder to record (.3d and .pose) data files, required for slam6D, from a series of views. 
+   The program REQUIRES you to turn an object through 360 degrees on a Lazy Susan. 
+-- Obtain the (.3d and .pose) data files by selecting ofxKinectDebug->Show Package Contents->MacOS
+-- Copy over the (.3d and .pose) data files and ask the slam6D program to process them (from the command line)
+-- The slam6D program produces a data file, points.pts which is the point cloud, for further meshing. 
+
+ISSUES:
+-- The slam6D algorithm is in a separate command-line program from the Kinect app. 
+-- The (.3d and .pose) data files produced by the Kinect app are placed in the app's resource fork (not /data)
+-- The slam6D project is not an OF/XCode project yet.
+-- The slam6D code requires a minor edit before compiling (see below). 
+-- The slam6D project requires Boost, to be installed in /usr/local/boost_1_46_1/
+-- The results are very noisy. We need noise pre-removal on the Kinect app end.
+-- There are many many options for the slam6D algorithm (type bin/slam6D at the command line for options). 
+   It is not yet known which of these options will work best with the data produced by the Kinect. 
+
+
+-------------------------------------------
+References:
+Instructions to install boost (heavily referred from):
+http://www.boost.org/doc/libs/1_46_1/more/getting_started/unix-variants.html
+
+Instructions to set CFlags in slam6D
+http://blog.vaibhavbajpai.com/installing-slam6d-on-mac-os-x
+
+-------------------------------------------
+INSTRUCTIONS:
+
+1. Download & untar Boost
+2. Move Boost to the directory you want -- typically, 
+/usr/local/boost_1_46_1/ 
+for general use
+
+-------------------------------------------
+3. Download slam6d, and change the following code in slam6D (which has bugs/errors!), 
+Change as follows to always export points (otherwise there's no output!):
+
+  if (exportPoints) {
+    cout << "Export all 3D Points" << endl;
+É
+  }
+
+into
+
+  if (true) {
+    cout << "Export all 3D Points" << endl;
+É
+  }
+
+-------------------------------------------
+4. Add the following CFlags to slam6D's makefile so that it will compile with dir that you want
+
+*Mostly type below commands in the shell after getting into slam6d dir
+
+rm Makefile.options
+cp Makefile.options.macos Makefile.options
+CFLAGS += -I/directory_to_boost
+CFLAGS += -L/directory_to_boost/lib
+make
+
+*Typing make means compiling slam6d with boost. If no error, continue
+
+-------------------------------------------
+USAGE:
+General (command-line) usage for slam6D:
+
+bin/slam6D -a 5 dir_you_want --exportAllPoints
+Dir should contain .3d and .pose data extracted from kinect
+Change # after -a to try different modes
+If you did optional step b in 3, you do not need to type --exportAllPoints
+
+Simply type bin/slam6D to get full help (man) info
